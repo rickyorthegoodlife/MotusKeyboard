@@ -10,6 +10,7 @@ function App() {
   const [score, setScore] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState('');
+  const [showKeyboard, setShowKeyboard] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -157,6 +158,10 @@ function App() {
     handleGuess();
   };
 
+  const toggleKeyboard = () => {
+    setShowKeyboard(!showKeyboard);
+  };
+
   return (
     <div className="game-container">
       <h1>Motus</h1>
@@ -182,55 +187,62 @@ function App() {
           </div>
         ))}
       </div>
-      <input
-        ref={inputRef}
-        type="text"
-        value={input}
-        onChange={handleInputChange}
-        onKeyPress={handleKeyPress}
-        maxLength={6}
-      />
-      <div className="keyboard">
-        <div className="keyboard-row">
-          {'AZERTYUIOP'.split('').map((letter) => (
-            <button
-              key={letter}
-              className="key"
-              onClick={() => handleKeyboardClick(letter)}
-            >
-              {letter}
+      {!showKeyboard && (
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
+          maxLength={6}
+        />
+      )}
+      <button onClick={toggleKeyboard}>
+        {showKeyboard ? 'Afficher la zone de saisie' : 'Afficher le clavier'}
+      </button>
+      {showKeyboard && (
+        <div className="keyboard">
+          <div className="keyboard-row">
+            {'AZERTYUIOP'.split('').map((letter) => (
+              <button
+                key={letter}
+                className="key"
+                onClick={() => handleKeyboardClick(letter)}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+          <div className="keyboard-row">
+            {'QSDFGHJKLM'.split('').map((letter) => (
+              <button
+                key={letter}
+                className="key"
+                onClick={() => handleKeyboardClick(letter)}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+          <div className="keyboard-row">
+            <button className="key special" onClick={handleBackspace}>
+              ←
             </button>
-          ))}
-        </div>
-        <div className="keyboard-row">
-          {'QSDFGHJKLM'.split('').map((letter) => (
-            <button
-              key={letter}
-              className="key"
-              onClick={() => handleKeyboardClick(letter)}
-            >
-              {letter}
+            {'WXCVBN'.split('').map((letter) => (
+              <button
+                key={letter}
+                className="key"
+                onClick={() => handleKeyboardClick(letter)}
+              >
+                {letter}
+              </button>
+            ))}
+            <button className="key special" onClick={handleEnter}>
+              Entrée
             </button>
-          ))}
+          </div>
         </div>
-        <div className="keyboard-row">
-          <button className="key special" onClick={handleEnter}>
-            Entrée
-          </button>
-          {'WXCVBN'.split('').map((letter) => (
-            <button
-              key={letter}
-              className="key"
-              onClick={() => handleKeyboardClick(letter)}
-            >
-              {letter}
-            </button>
-          ))}
-          <button className="key special" onClick={handleBackspace}>
-            ←
-          </button>
-        </div>
-      </div>
+      )}
       <button onClick={resetGameAndScore}>Réinitialiser le Jeu</button>
 
       {showPopup && (
