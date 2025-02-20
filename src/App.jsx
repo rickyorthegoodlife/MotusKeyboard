@@ -185,10 +185,10 @@ function App() {
           <div key={attemptIndex} className="row">
             {Array.from({ length: 6 }).map((_, letterIndex) => {
               let displayLetter = '';
-                if (attemptIndex > 0 && attemptIndex === currentAttempt && letterIndex === 0) {
+                if (attemptIndex === 0 && letterIndex === 0) {
                     displayLetter = input[0] || targetWord[0];
-                } else if (attemptIndex === 0 && letterIndex === 0) {
-                    displayLetter = targetWord[0];
+                } else if (attemptIndex > 0 && attemptIndex === currentAttempt && letterIndex === 0) {
+                    displayLetter = input[0] || targetWord[0];
                 }
                 else if (guess) {
                     displayLetter = guess[letterIndex] || '';
