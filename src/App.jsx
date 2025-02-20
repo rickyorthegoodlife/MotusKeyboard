@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { wordList } from './wordList';
+import { targetWordList } from './targetWordList';
 
 function App() {
   const [targetWord, setTargetWord] = useState(getRandomWord());
@@ -29,7 +30,7 @@ function App() {
   function getRandomWord() {
     let word;
     do {
-      word = wordList[Math.floor(Math.random() * wordList.length)];
+      word = targetWordList[Math.floor(Math.random() * targetWordList.length)];
     } while (word.length !== 6);
     return word;
   }
@@ -198,9 +199,8 @@ function App() {
             {Array.from({ length: 6 }).map((_, letterIndex) => {
               let displayLetter = '';
                 if (attemptIndex === currentAttempt && letterIndex === 0) {
-                    displayLetter = input[0] || targetWord[0];
-                }
-                else if (guess) {
+                    displayLetter =  input[0] || targetWord[0];
+                } else if (guess) {
                     displayLetter = guess[letterIndex] || '';
                 }
               return (
