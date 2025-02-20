@@ -119,28 +119,30 @@ function App() {
   };
 
   const getFeedback = (guess) => {
-    const feedback = Array(6).fill('');
-    const targetWordArray = targetWord.split('');
-    const guessArray = guess.split('');
+        const feedback = Array(6).fill('');
+        if (!guess) return feedback;
+        const targetWordArray = targetWord.split('');
+        const guessArray = guess.split('');
 
-    // Check for correct positions first
-    guessArray.forEach((letter, index) => {
-      if (letter === targetWordArray[index]) {
-        feedback[index] = 'correct';
-        targetWordArray[index] = null; // Mark as used
-        guessArray[index] = null; // Mark as used
-      }
-    });
+        // Check for correct positions first
+        for (let i = 0; i < guessArray.length; i++) {
+            if (guessArray[i] === targetWordArray[i]) {
+                feedback[i] = 'correct';
+                targetWordArray[i] = null; // Mark as used
+                guessArray[i] = null; // Mark as used
+            }
+        }
 
-    // Check for present letters
-    guessArray.forEach((letter, index) => {
-      if (letter && targetWordArray.includes(letter)) {
-        feedback[index] = 'present';
-        targetWordArray[targetWordArray.indexOf(letter)] = null; // Mark as used
-      }
-    });
-    return feedback;
-  };
+        // Check for present letters
+        for (let i = 0; i < guessArray.length; i++) {
+            if (guessArray[i] && targetWordArray.includes(guessArray[i])) {
+                feedback[i] = 'present';
+                targetWordArray[targetWordArray.indexOf(guessArray[i])] = null; // Mark as used
+            }
+        }
+
+        return feedback;
+    };
 
  const handleKeyboardClick = (letter) => {
         if (input.length < 6) {
@@ -197,10 +199,10 @@ function App() {
                 <span
                   key={letterIndex}
                   className={`cell ${
-                    attemptIndex < currentAttempt
-                      ? getFeedback(guess)[letterIndex]
-                      : ''
-                  }`}
+                                        attemptIndex < currentAttempt
+                                            ? getFeedback(guess)[letterIndex]
+                                            : ''
+                                    }`}
                 >
                   {displayLetter}
                 </span>
@@ -219,12 +221,7 @@ function App() {
           maxLength={6}
         />
       )}
-      <div className="button-container">
-        <button onClick={toggleKeyboard}>
-          {showKeyboard ? 'Afficher la zone de saisie' : 'Afficher le clavier'}
-        </button>
-        <button onClick={resetGameAndScore}>Réinitialiser le Jeu</button>
-      </div>
+      
       {showKeyboard && (
         <div className="keyboard">
           <div className="keyboard-row">
@@ -268,6 +265,12 @@ function App() {
           </div>
         </div>
       )}
+      <div className="button-container">
+        <button onClick={toggleKeyboard}>
+          {showKeyboard ? 'Afficher la zone de saisie' : 'Afficher le clavier'}
+        </button>
+        <button onClick={resetGameAndScore}>Réinitialiser le Jeu</button>
+      </div>
       {showPopup && (
         <div className="popup" onKeyPress={handleKeyPress}>
           <div className="popup-content">
