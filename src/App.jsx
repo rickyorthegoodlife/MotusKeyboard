@@ -58,6 +58,11 @@ function App() {
 
   const handleGuess = () => {
     if (input.length === 6 && currentAttempt < 6) {
+      if (!wordList.includes(input)) {
+        setCurrentAttempt(currentAttempt + 1);
+        setInput('');
+        return;
+      }
       const feedback = getFeedback(input);
       animateFeedback(feedback, () => {
         if (input === targetWord) {
@@ -148,24 +153,29 @@ function App() {
         if (input.length < 6) {
             const new_input = input + letter;
             setInput(new_input);
-            setGuesses((prevGuesses) => {
-                const newGuesses = [...prevGuesses];
-                newGuesses[currentAttempt] = new_input;
-                return newGuesses;
-            });
+            updateGuesses(new_input);
         }
+    };
+
+    const updateGuesses = (newInput) => {
+        setGuesses((prevGuesses) => {
+            const newGuesses = [...prevGuesses];
+            let updatedGuess = '';
+            if (currentAttempt === 0) {
+                updatedGuess = targetWord[0] + newInput.slice(1, 6);
+            } else {
+                updatedGuess = newInput;
+            }
+            newGuesses[currentAttempt] = updatedGuess;
+            return newGuesses;
+        });
     };
 
   const handleBackspace = () => {
     if (input.length > 0) {
       const new_input = input.slice(0, -1);
       setInput(new_input);
-  
-      setGuesses((prevGuesses) => {
-        const newGuesses = [...prevGuesses];
-        newGuesses[currentAttempt] = new_input;
-        return newGuesses;
-      });
+      updateGuesses(new_input);
     }
   };
 
@@ -187,9 +197,7 @@ function App() {
           <div key={attemptIndex} className="row">
             {Array.from({ length: 6 }).map((_, letterIndex) => {
               let displayLetter = '';
-                if (attemptIndex === 0 && letterIndex === 0) {
-                    displayLetter = input[0] || targetWord[0];
-                } else if (attemptIndex > 0 && attemptIndex === currentAttempt && letterIndex === 0) {
+                if (attemptIndex === currentAttempt && letterIndex === 0) {
                     displayLetter = input[0] || targetWord[0];
                 }
                 else if (guess) {
@@ -199,7 +207,7 @@ function App() {
                 <span
                   key={letterIndex}
                   className={`cell ${
-                                        attemptIndex < currentAttempt
+                                        (attemptIndex < currentAttempt && wordList.includes(guesses[attemptIndex]))
                                             ? getFeedback(guess)[letterIndex]
                                             : ''
                                     }`}
