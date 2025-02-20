@@ -102,6 +102,14 @@ input[type='text']:focus {
   outline: none;
 }
 
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
 button {
   padding: 10px 20px;
   font-size: 16px;
@@ -113,6 +121,8 @@ button {
   transition: background-color 0.3s, transform 0.2s;
   margin: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  max-width: 48%;
 }
 
 button:hover {
@@ -159,6 +169,7 @@ button:hover {
   align-items: center;
   margin-top: 20px;
   width: 100%;
+  padding: 0 15px;
 }
 
 .keyboard-row {
@@ -169,8 +180,8 @@ button:hover {
 }
 
 .key {
-  padding: 15px;
-  font-size: 18px;
+  padding: 13px;
+  font-size: 16px;
   cursor: pointer;
   border: none;
   border-radius: 8px;
@@ -180,7 +191,7 @@ button:hover {
   margin: 2px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   flex: 1;
-  max-width: 60px;
+  max-width: 56px;
 }
 
 .key:hover {
@@ -191,9 +202,46 @@ button:hover {
 .key.special {
   background: linear-gradient(135deg, #ff6b6b, #ff416c);
   flex: 2;
-  max-width: 120px;
+  max-width: 112px;
 }
 
 .key.special:hover {
   background: linear-gradient(135deg, #ff416c, #ff6b6b);
+}
+
+@media (max-width: 600px) {
+  .game-container {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .cell {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .key {
+    padding: 8px;
+    font-size: 14px;
+    max-width: 46px;
+  }
+
+  .key.special {
+    max-width: 92px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  button {
+    max-width: 100%;
+    margin: 5px 0;
+  }
+
+  .keyboard {
+    padding: 0;
+  }
 }

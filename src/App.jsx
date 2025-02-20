@@ -14,8 +14,10 @@ function App() {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    inputRef.current.focus();
-  }, [showPopup]);
+    if (!showKeyboard && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showKeyboard]);
 
   useEffect(() => {
     if (currentAttempt === 6 && !showPopup) {
@@ -34,12 +36,14 @@ function App() {
 
   const handleInputChange = (e) => {
     const value = e.target.value.toUpperCase();
-    if (value.length <= 6) {
-      setInput(value);
-      const newGuesses = [...guesses];
-      newGuesses[currentAttempt] = value;
-      setGuesses(newGuesses);
-    }
+     if (value.length <= 6) {
+            setInput(value);
+            setGuesses((prevGuesses) => {
+                const newGuesses = [...prevGuesses];
+                newGuesses[currentAttempt] = value;
+                return newGuesses;
+            });
+        }
   };
 
   const handleKeyPress = (e) => {
@@ -98,7 +102,10 @@ function App() {
     setCurrentAttempt(0);
     setInput('');
     setShowPopup(false);
-    inputRef.current.focus();
+    
+    if (!showKeyboard && inputRef.current) {
+      inputRef.current.focus();
+    }
 
     // Reset all cells to blue
     document.querySelectorAll('.cell').forEach(cell => {
@@ -132,25 +139,31 @@ function App() {
         targetWordArray[targetWordArray.indexOf(letter)] = null; // Mark as used
       }
     });
-
     return feedback;
   };
 
-  const handleKeyboardClick = (letter) => {
-    if (input.length < 6) {
-      setInput(input + letter);
-      const newGuesses = [...guesses];
-      newGuesses[currentAttempt] = input + letter;
-      setGuesses(newGuesses);
-    }
-  };
+ const handleKeyboardClick = (letter) => {
+        if (input.length < 6) {
+            const new_input = input + letter;
+            setInput(new_input);
+            setGuesses((prevGuesses) => {
+                const newGuesses = [...prevGuesses];
+                newGuesses[currentAttempt] = new_input;
+                return newGuesses;
+            });
+        }
+    };
 
   const handleBackspace = () => {
     if (input.length > 0) {
-      setInput(input.slice(0, -1));
-      const newGuesses = [...guesses];
-      newGuesses[currentAttempt] = input.slice(0, -1);
-      setGuesses(newGuesses);
+      const new_input = input.slice(0, -1);
+      setInput(new_input);
+  
+      setGuesses((prevGuesses) => {
+        const newGuesses = [...prevGuesses];
+        newGuesses[currentAttempt] = new_input;
+        return newGuesses;
+      });
     }
   };
 
@@ -170,20 +183,29 @@ function App() {
       <div className="grid">
         {guesses.map((guess, attemptIndex) => (
           <div key={attemptIndex} className="row">
-            {Array.from({ length: 6 }).map((_, letterIndex) => (
-              <span
-                key={letterIndex}
-                className={`cell ${
-                  attemptIndex < currentAttempt
-                    ? getFeedback(guess)[letterIndex]
-                    : ''
-                }`}
-              >
-                {attemptIndex === 0 && letterIndex === 0
-                  ? targetWord[0]
-                  : guess[letterIndex] || ''}
-              </span>
-            ))}
+            {Array.from({ length: 6 }).map((_, letterIndex) => {
+              let displayLetter = '';
+                if (attemptIndex > 0 && attemptIndex === currentAttempt && letterIndex === 0) {
+                    displayLetter = input[0] || targetWord[0];
+                } else if (attemptIndex === 0 && letterIndex === 0) {
+                    displayLetter = targetWord[0];
+                }
+                else if (guess) {
+                    displayLetter = guess[letterIndex] || '';
+                }
+              return (
+                <span
+                  key={letterIndex}
+                  className={`cell ${
+                    attemptIndex < currentAttempt
+                      ? getFeedback(guess)[letterIndex]
+                      : ''
+                  }`}
+                >
+                  {displayLetter}
+                </span>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -197,9 +219,12 @@ function App() {
           maxLength={6}
         />
       )}
-      <button onClick={toggleKeyboard}>
-        {showKeyboard ? 'Afficher la zone de saisie' : 'Afficher le clavier'}
-      </button>
+      <div className="button-container">
+        <button onClick={toggleKeyboard}>
+          {showKeyboard ? 'Afficher la zone de saisie' : 'Afficher le clavier'}
+        </button>
+        <button onClick={resetGameAndScore}>Réinitialiser le Jeu</button>
+      </div>
       {showKeyboard && (
         <div className="keyboard">
           <div className="keyboard-row">
@@ -243,8 +268,6 @@ function App() {
           </div>
         </div>
       )}
-      <button onClick={resetGameAndScore}>Réinitialiser le Jeu</button>
-
       {showPopup && (
         <div className="popup" onKeyPress={handleKeyPress}>
           <div className="popup-content">
