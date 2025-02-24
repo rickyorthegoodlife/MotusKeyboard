@@ -13,7 +13,17 @@ function App() {
   const [message, setMessage] = useState('');
   const [showKeyboard, setShowKeyboard] = useState(false);
   const inputRef = useRef(null);
+  const [beginnerMode, setBeginnerMode] = useState(false);
+  const [secondBonusIndex, setSecondBonusIndex] = useState(null);
 
+  const correctLetterSound = new Audio("/motus-mot-trouve.mp3");
+  correctLetterSound.load(); // Assure que le son est bien préchargé
+  const wrongLetterSound = new Audio("/11303.mp3"); // motus mots non trouvé
+  wrongLetterSound.load(); // Assure que le son est bien préchargé
+  const MotusFailSound = new Audio("/Motus_fail.mp3");
+  MotusFailSound.load(); // Assure que le son est bien préchargé
+  const LetterSound = new Audio("/keyboard-single-click.mp3"); // motus mots non trouvé
+  LetterSound.load(); // Assure que le son est bien préchargé
   useEffect(() => {
     if (!showKeyboard && inputRef.current) {
       inputRef.current.focus();
@@ -50,7 +60,7 @@ function App() {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       if (showPopup) {
-        resetGame();
+        resetGame(false);
       } else {
         handleGuess();
       }
@@ -65,6 +75,15 @@ function App() {
         return;
       }
       const feedback = getFeedback(input);
+      if (input==targetWord){
+        correctLetterSound.play();
+      }
+      else if (currentAttempt+1>5) {
+        MotusFailSound.play();
+      }
+      else {
+        wrongLetterSound.play();
+      }
       animateFeedback(feedback, () => {
         if (input === targetWord) {
           setScore(score + 1);
@@ -101,13 +120,17 @@ function App() {
     });
   };
 
-  const resetGame = () => {
+  const resetGame = (newGame = true) => {
     const newTargetWord = getRandomWord();
     setTargetWord(newTargetWord);
     setGuesses(['', ...Array(5).fill('')]);
     setCurrentAttempt(0);
     setInput('');
     setShowPopup(false);
+    if (newGame) {
+      setBeginnerMode(false);
+      setSecondBonusIndex(null);
+    }
     
     if (!showKeyboard && inputRef.current) {
       inputRef.current.focus();
@@ -188,6 +211,19 @@ function App() {
     setShowKeyboard(!showKeyboard);
   };
 
+  const toggleBeginnerMode = () => {
+    setBeginnerMode(!beginnerMode);
+    if (!beginnerMode) {
+      let randomIndex = Math.floor(Math.random() * 4) + 1; // Random index between 1 and 4
+      setSecondBonusIndex(randomIndex);
+      setMessage('Mode Débutant activé!');
+    } else {
+      setSecondBonusIndex(null);
+      setMessage('Mode Normal activé!');
+    }
+    setShowPopup(true);
+  };
+
   return (
     <div className="game-container">
       <h1>Motus</h1>
@@ -198,19 +234,29 @@ function App() {
           <div key={attemptIndex} className="row">
             {Array.from({ length: 6 }).map((_, letterIndex) => {
               let displayLetter = '';
-                if (attemptIndex === currentAttempt && letterIndex === 0) {
-                    displayLetter =  input[0] || targetWord[0];
-                } else if (guess) {
-                    displayLetter = guess[letterIndex] || '';
-                }
+              let isBonusLetter = false;
+
+              if (attemptIndex === currentAttempt && letterIndex === 0) {
+                displayLetter = input[0] || targetWord[0];
+              } else if (beginnerMode && attemptIndex === 0 && letterIndex === secondBonusIndex) {
+                displayLetter = input[letterIndex] || targetWord[letterIndex];
+                isBonusLetter = true;
+              } else if (beginnerMode && attemptIndex > 0 && attemptIndex === currentAttempt && getFeedback(guesses[attemptIndex - 1])[letterIndex] === 'correct') {
+                displayLetter = input[letterIndex] || targetWord[letterIndex];
+                isBonusLetter = true;
+              }
+              else if (guess) {
+                displayLetter = guess[letterIndex] || '';
+              }
+
               return (
                 <span
                   key={letterIndex}
                   className={`cell ${
-                                        (attemptIndex < currentAttempt && wordList.includes(guesses[attemptIndex]))
-                                            ? getFeedback(guess)[letterIndex]
-                                            : ''
-                                    }`}
+                    (attemptIndex < currentAttempt && wordList.includes(guesses[attemptIndex]))
+                      ? getFeedback(guess)[letterIndex]
+                      : ''
+                  } ${isBonusLetter ? 'bonus-letter' : ''}`}
                 >
                   {displayLetter}
                 </span>
@@ -278,12 +324,15 @@ function App() {
           {showKeyboard ? 'Afficher la zone de saisie' : 'Afficher le clavier'}
         </button>
         <button onClick={resetGameAndScore}>Réinitialiser le Jeu</button>
+        <button onClick={toggleBeginnerMode}>
+          {beginnerMode ? 'Mode Normal' : 'Mode Débutant'}
+        </button>
       </div>
       {showPopup && (
         <div className="popup" onKeyPress={handleKeyPress}>
           <div className="popup-content">
             <h2>{message}</h2>
-            <button onClick={resetGame}>Jouer à nouveau</button>
+            <button onClick={() => resetGame(false)}>Jouer à nouveau</button>
           </div>
         </div>
       )}
