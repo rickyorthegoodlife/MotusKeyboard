@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { wordList } from './wordList';
 import { targetWordList } from './targetWordList';
-import { Howl } from "howler";
 
 function App() {
   const [targetWord, setTargetWord] = useState(getRandomWord());
@@ -16,46 +15,11 @@ function App() {
   const inputRef = useRef(null);
   const [beginnerMode, setBeginnerMode] = useState(false);
   const [secondBonusIndex, setSecondBonusIndex] = useState(null);
-  
-  const sounds = {
-    correctLetter: new Howl({
-      src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/motus-lettre-bonne.mp3"],
-      volume: 1.0,
-      preload: true,
-      html5: true,
-      pool: 5,
-    }),
-    wrongLetter: new Howl({
-      src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/11303.mp3"],
-      volume: 1.0,
-      preload: true,
-      html5: true,
-      pool: 5,
-    }),
-    wordFound: new Howl({
-      src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/motus-mot-trouve.mp3"],
-      volume: 1.0,
-      preload: true,
-      html5: true,
-      pool: 5,
-    }),
-    gameOver: new Howl({
-      src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/Motus_fail.mp3"],
-      volume: 1.0,
-      preload: true,
-      html5: true,
-      pool: 5,
-    }),
-  };
 
-  const playSound = (soundKey) => {
-    if (sounds[soundKey]) {
-      sounds[soundKey].stop();  // Arrête toute lecture en cours
-      sounds[soundKey].play();
-    } else {
-      console.error("Son non trouvé :", soundKey);
-    }
-  };
+  const correctLetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/motus-mot-trouve.mp3");
+  const wrongLetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/11303.mp3"); // motus mots non trouvé
+  const MotusFailSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/Motus_fail.mp3");
+  const LetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/keyboard-single-click.mp3"); // motus mots non trouvé
 
   useEffect(() => {
     if (!showKeyboard && inputRef.current) {
@@ -109,13 +73,13 @@ function App() {
       }
       const feedback = getFeedback(input);
       if (input==targetWord){
-        playSound("wordFound");      // Joue le son pour un mot trouvé
+        correctLetterSound.play();
       }
       else if (currentAttempt+1>5) {
-        playSound("gameOver");       // Joue le son quand la partie est terminée
+        MotusFailSound.play();
       }
       else {
-        playSound("wrongLetter");    // Joue le son pour une lettre incorrecte
+        wrongLetterSound.play();
       }
       animateFeedback(feedback, () => {
         if (input === targetWord) {
