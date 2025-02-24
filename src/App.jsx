@@ -16,13 +16,13 @@ function App() {
   const [beginnerMode, setBeginnerMode] = useState(false);
   const [secondBonusIndex, setSecondBonusIndex] = useState(null);
 
-  const correctLetterSound = new Audio("/motus-mot-trouve.mp3");
+  const correctLetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/motus-mot-trouve.mp3");
   correctLetterSound.load(); // Assure que le son est bien préchargé
-  const wrongLetterSound = new Audio("/11303.mp3"); // motus mots non trouvé
+  const wrongLetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/11303.mp3"); // motus mots non trouvé
   wrongLetterSound.load(); // Assure que le son est bien préchargé
-  const MotusFailSound = new Audio("/Motus_fail.mp3");
+  const MotusFailSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/Motus_fail.mp3");
   MotusFailSound.load(); // Assure que le son est bien préchargé
-  const LetterSound = new Audio("/keyboard-single-click.mp3"); // motus mots non trouvé
+  const LetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/keyboard-single-click.mp3"); // motus mots non trouvé
   LetterSound.load(); // Assure que le son est bien préchargé
   useEffect(() => {
     if (!showKeyboard && inputRef.current) {
