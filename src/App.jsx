@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { wordList } from './wordList';
 import { targetWordList } from './targetWordList';
+import { Howl } from "howler";
 
 function App() {
   const [targetWord, setTargetWord] = useState(getRandomWord());
@@ -15,12 +16,27 @@ function App() {
   const inputRef = useRef(null);
   const [beginnerMode, setBeginnerMode] = useState(false);
   const [secondBonusIndex, setSecondBonusIndex] = useState(null);
-
-  const correctLetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/motus-mot-trouve.mp3");
-  const wrongLetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/11303.mp3"); // motus mots non trouvé
-  const MotusFailSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/Motus_fail.mp3");
-  const LetterSound = new Audio("https://rickyorthegoodlife.github.io/MotusKeyboard/keyboard-single-click.mp3"); // motus mots non trouvé
-
+  const correctLetterSound = new Howl({
+    src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/motus-mot-trouve.mp3"],
+    volume: 1.0,
+    html5: true,
+  });
+  const wrongLetterSound = new Howl({
+    src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/11303.mp3"],
+    volume: 1.0,
+    html5: true,
+  });
+  const MotusFailSound = new Howl({
+    src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/Motus_fail.mp3"],
+    volume: 1.0,
+    html5: true,
+  });
+  const LetterSound = new Howl({
+    src: ["https://rickyorthegoodlife.github.io/MotusKeyboard/keyboard-single-click.mp3"],
+    volume: 1.0,
+    html5: true,
+  });
+  
   useEffect(() => {
     if (!showKeyboard && inputRef.current) {
       inputRef.current.focus();
